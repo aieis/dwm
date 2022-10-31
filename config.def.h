@@ -1,11 +1,12 @@
 /* See LICENSE file for copyright and license details. */
+#include <X11/XF86keysym.h>
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10" };
+static const char *fonts[]          = { "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -45,7 +46,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -58,13 +59,65 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *termcmd[]  = { "sakura", NULL };
+/* Media Controls */
+static const char *raisevolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
+static const char *lowervolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
+static const char *mutecmd[]     = {"/bin/sh", "-c", "amixer sset Master toggle; kill -44 $(pidof dwmblocks)"};
+static const char *nextmediacmd[] = {"playerctl", "--all-players", "next", NULL};
+static const char *prevmediacmd[] = {"playerctl", "--all-players", "prev", NULL};
+static const char *playmediacmd[] = {"playerctl", "--all-players", "play-pause", NULL};
+
+/* Brightness Controls */
+static const char *downbrightcmd[] = {"xbacklight", "-dec", "10", NULL};
+static const char *upbrightcmd[] = {"xbacklight", "-inc", "10", NULL};
+
+/* Power options */
+static const char *choosepower[] = {"poweroptsdmenu", NULL};
+
+/* Program Startup Shortcuts */
+static const char *startranger[] = {"sakura", "-n", "fileman", "-e", "ranger", NULL};
+static const char *startmail[] = {"sakura", "-n", "mailclient","-e", "neomutt", NULL};
+
+static const char *startbrowser[] = {"firefox", "-p", NULL};
+static const char *startemacs[] = {"emacsclient", "-c", "-a", "",  NULL};
+
+/* Screen Shot */
+static const char *screenshotcmd[] = {"scrot-select", NULL};
+
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
+    	{ MODKEY, 			XK_e,	  				spawn,	   	{.v = startranger } },
+	{ MODKEY|ShiftMask,		XK_e,	  				spawn,	   	{.v = startmail } },
+	{ MODKEY|ShiftMask,		XK_s,					spawn,		{.v = screenshotcmd } },
+	{ MODKEY,			XK_b,					spawn,		{.v = startbrowser } },
+	{ MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
+	{ MODKEY,                       XK_n,                                   spawn,          {.v = startemacs } },
+	{ 0,				XF86XK_AudioRaiseVolume,		spawn,		{.v = raisevolcmd } },
+	{ 0,				XF86XK_AudioLowerVolume,		spawn,		{.v = lowervolcmd } },
+	{ 0,				XF86XK_AudioMute,			spawn,		{.v = mutecmd } },
+	{ 0,				XF86XK_MonBrightnessDown,		spawn,		{.v = downbrightcmd } },
+	{ 0,				XF86XK_MonBrightnessUp,			spawn,		{.v = upbrightcmd } },
+	{ 0,				XF86XK_AudioNext,			spawn,		{.v = nextmediacmd } },
+	{ 0, 				XF86XK_AudioPrev,			spawn,		{.v = prevmediacmd } },
+	{ 0,				XF86XK_AudioPlay,			spawn,		{.v = playmediacmd } },
+	{ 0,				XK_F12,					spawn, 		{.v = choosepower } },
+	{ MODKEY,	                XK_F11,     				setlayout,      {.v = &layouts[2]} },
+	{ 0,                       	XK_F7,      				view,           {.ui = 1 << 7} },
+	{ 0,                       	XK_F1,      				view,           {.ui = 1 << 0} }, \
+	{ 0,                       	XK_F2,      				view,           {.ui = 1 << 1} }, \
+	{ 0,                       	XK_F3,      				view,           {.ui = 1 << 2} }, \
+	{ 0,                            XK_F4,   				view,           {0} },
+        { MODKEY,                            XK_KP_Home,   spawn,          {.v = lowervolcmd}},
+        { MODKEY,                            XK_KP_Prior,   spawn,          {.v = raisevolcmd}},
+        { MODKEY,                            XK_KP_Up,   spawn,          {.v = mutecmd}},
+        { MODKEY,                            XK_KP_Left,   spawn,          {.v = prevmediacmd}},
+        { MODKEY,                            XK_KP_Right,   spawn,          {.v = nextmediacmd}},
+        { MODKEY,                            XK_KP_Begin,   spawn,          {.v = playmediacmd}},
+
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
