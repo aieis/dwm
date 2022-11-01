@@ -268,8 +268,6 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
-static char* swtitle;
-#define MAX_TITLE_LENGTH 4000
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1623,8 +1621,7 @@ setup(void)
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
-        //swtitle = emalloc(MAX_TITLE_LENGTH + 2);
-	/* init bars */
+        /* init bars */
 	updatebars();
 	updatestatus();
 	/* supporting window for NetWMCheck */
