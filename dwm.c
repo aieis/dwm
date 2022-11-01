@@ -56,7 +56,7 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
-
+#define TEXTW_NP(X)             (drw_fontset_getwidth(drw, (X)))
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
@@ -268,6 +268,8 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
+static char* swtitle;
+#define MAX_TITLE_LENGTH 4000
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -715,32 +717,82 @@ drawbar(Monitor *m)
 		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
 	}
 
+        int n = 0;
+        int totalw = 0;
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
+                if (ISVISIBLE(c)) {
+                        n++;
+                        totalw = TEXTW_NP(c->name);
+                }
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+                int scm = m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm;
+		drw_setscheme(drw, scheme[scm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-		if (occ & 1 << i)
+                if (scm == SchemeSel) {
+                  drw_rect(drw, x, bh - boxw, w, boxw/1.5, 1, 0);
+                }
+                if (occ & 1 << i)
 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
 				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
 				urg & 1 << i);
-		x += w;
+                x += w;
 	}
 	w = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
 
+#define  DEL_L "["
+#define  DEL_R "]"
+        int wbl = TEXTW_NP(DEL_L);
+        int wbr = TEXTW_NP(DEL_R);
+        int avg_sub = 0;
+        int title_sub = 0;
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
-			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
+                        int remaining = m->ww - tw - x - wbl - wbr;
+                        if (totalw > remaining) {
+                          if (n > 1) {
+                            avg_sub = (totalw - remaining + n - 2) / (n-1);
+                          }
+                          if (totalw - avg_sub * (n-1) > remaining) {
+                            title_sub = totalw - remaining - avg_sub * (n-1);
+                          }
+                        }
+                        for (c = m->clients; c; c = c ->next) {
+                          if (!ISVISIBLE(c)) continue;
+                          if (c == m->sel) {
+                            int twidth = TEXTW_NP(c->name) - title_sub;
+                            drw_setscheme(drw, scheme[SchemeSel]);
+                            drw_text(drw, x, 0, wbl, bh, 0, DEL_L, 0);
+                            drw_text(drw, x + wbl, 0, twidth, bh, 0, c->name, 0);
+                            drw_text(drw, x + wbl + twidth, 0, wbr, bh, 0, DEL_R, 0);
+                            w = twidth;
+                          } else {
+                            int nwidth = TEXTW_NP(c->name) - avg_sub;
+                            drw_setscheme(drw, scheme[SchemeNorm]);
+                            drw_rect(drw, x, 0, wbl, bh, 1, 1);
+                            drw_text(drw, x + wbl, 0, nwidth, bh, 0, c->name, 0);
+                            drw_rect(drw, x + wbl + nwidth, 0, wbr, bh, 1, 1);
+                            w = nwidth;
+                          }
+
+                          if (c->isfloating) 
+				drw_rect(drw, x + boxs, boxs, boxw, boxw, c->isfixed, 0);
+
+                          x += w + wbr + wbl;
+                          remaining -= w;
+                        }
+                        if (remaining > 0) {
+                          drw_setscheme(drw, scheme[SchemeNorm]);
+                          drw_rect(drw, x, 0, remaining, bh, 1, 1);
+                        }
+                        
 		} else {
 			drw_setscheme(drw, scheme[SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, 1);
@@ -1571,6 +1623,7 @@ setup(void)
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
+        //swtitle = emalloc(MAX_TITLE_LENGTH + 2);
 	/* init bars */
 	updatebars();
 	updatestatus();
