@@ -717,13 +717,19 @@ drawbar(Monitor *m)
 
         int n = 0;
         int totalw = 0;
+        
+#define  DEL_L "[ "
+#define  DEL_R " ]"
+        int wbl = TEXTW_NP(DEL_L);
+        int wbr = TEXTW_NP(DEL_R);
+
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
                 if (ISVISIBLE(c)) {
                         n++;
-                        totalw = TEXTW_NP(c->name);
+                        totalw += TEXTW_NP(c->name) + wbl + wbr;
                 }
 	}
 	x = 0;
@@ -733,7 +739,8 @@ drawbar(Monitor *m)
 		drw_setscheme(drw, scheme[scm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
                 if (scm == SchemeSel) {
-                  drw_rect(drw, x, bh - boxw, w, boxw/1.5, 1, 0);
+                  int hbh = boxw/1.75;
+                  drw_rect(drw, x, bh - hbh - 1, w, hbh , 1, 0);
                 }
                 if (occ & 1 << i)
 			drw_rect(drw, x + boxs, boxs, boxw, boxw,
@@ -744,16 +751,14 @@ drawbar(Monitor *m)
 	w = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
 	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
-
-#define  DEL_L "["
-#define  DEL_R "]"
-        int wbl = TEXTW_NP(DEL_L);
-        int wbr = TEXTW_NP(DEL_R);
         int avg_sub = 0;
         int title_sub = 0;
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
-                        int remaining = m->ww - tw - x - wbl - wbr;
+                        int remaining = m->ww - tw - x;
+                        int tpads =  wbr + wbl;
+                        int drawn = 0;
+                        int skipped = 0;
                         if (totalw > remaining) {
                           if (n > 1) {
                             avg_sub = (totalw - remaining + n - 2) / (n-1);
@@ -770,22 +775,27 @@ drawbar(Monitor *m)
                             drw_text(drw, x, 0, wbl, bh, 0, DEL_L, 0);
                             drw_text(drw, x + wbl, 0, twidth, bh, 0, c->name, 0);
                             drw_text(drw, x + wbl + twidth, 0, wbr, bh, 0, DEL_R, 0);
-                            w = twidth;
-                          } else {
+                            drawn = twidth + tpads;
+                          } else if (!skipped){
                             int nwidth = TEXTW_NP(c->name) - avg_sub;
+                            if (nwidth < 0) {
+                              skipped = 1;
+                              continue;
+                            }
                             drw_setscheme(drw, scheme[SchemeNorm]);
                             drw_rect(drw, x, 0, wbl, bh, 1, 1);
                             drw_text(drw, x + wbl, 0, nwidth, bh, 0, c->name, 0);
                             drw_rect(drw, x + wbl + nwidth, 0, wbr, bh, 1, 1);
-                            w = nwidth;
+                            drawn = nwidth + tpads;
                           }
 
                           if (c->isfloating) 
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, c->isfixed, 0);
 
-                          x += w + wbr + wbl;
-                          remaining -= w;
+                          x += drawn;
+                          remaining -= drawn;
                         }
+                        
                         if (remaining > 0) {
                           drw_setscheme(drw, scheme[SchemeNorm]);
                           drw_rect(drw, x, 0, remaining, bh, 1, 1);
