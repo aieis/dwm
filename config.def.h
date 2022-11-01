@@ -30,6 +30,7 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+        { "fileman",  NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -76,8 +77,8 @@ static const char *upbrightcmd[] = {"xbacklight", "-inc", "10", NULL};
 static const char *choosepower[] = {"poweroptsdmenu", NULL};
 
 /* Program Startup Shortcuts */
-static const char *startranger[] = {"sakura", "-n", "fileman", "-e", "ranger", NULL};
-static const char *startmail[] = {"sakura", "-n", "mailclient","-e", "neomutt", NULL};
+static const char *startranger[] = {"sakura", "--name", "fileman", "--class", "fileman", "-c", "200", "-r", "30", "-e", "lfrun", NULL};
+static const char *startmail[] = {"sakura", "--name", "mailclient", "--class", "mailclient", "-c", "200", "-r", "30", "-e", "neomutt", NULL};
 
 static const char *startbrowser[] = {"firefox", "-p", NULL};
 static const char *startemacs[] = {"emacsclient", "-c", "-a", "",  NULL};
