@@ -1,0 +1,29 @@
+From 1103a8c3a64b2dbad53f1a23fabae88341eddbef Mon Sep 17 00:00:00 2001
+From: Ahmed Salem <aieisalem17@gmail.com>
+Date: Mon, 21 Aug 2023 16:09:13 +0100
+Subject: Auto-focus urgent
+
+---
+ dwm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/dwm.c b/dwm.c
+index f1d86b2..96111ea 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -526,8 +526,10 @@ clientmessage(XEvent *e)
+ 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
+ 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
+ 	} else if (cme->message_type == netatom[NetActiveWindow]) {
+-		if (c != selmon->sel && !c->isurgent)
+-			seturgent(c, 1);
++               if (c != selmon->sel && !c->isurgent) {
++                       seturgent(c, 1);
++                       focus(c);
++            }
+ 	}
+ }
+ 
+-- 
+2.41.0
+
