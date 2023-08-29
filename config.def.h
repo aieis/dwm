@@ -6,7 +6,7 @@ static const unsigned int borderpx  = 5;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "xft:Bitstream Vera Sans Mono:size=10:bold:antialias=true" };
+static const char *fonts[]          = { "xft:Bitstream Vera Sans Mono:size=12:bold:antialias=true" };
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
@@ -70,7 +70,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "sakura", NULL };
+static const char *termcmd[]  = { "alacritty", NULL };
 /* Media Controls */
 static const char *raisevolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
 static const char *lowervolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
@@ -87,8 +87,10 @@ static const char *upbrightcmd[] = {"xbacklight", "-inc", "10", NULL};
 static const char *choosepower[] = {"poweroptsdmenu", NULL};
 
 /* Program Startup Shortcuts */
-static const char *startranger[] = {"sakura", "--name", "fileman", "--class", "fileman", "-c", "200", "-r", "30", "-e", "lfrun", NULL};
-static const char *startmail[] = {"sakura", "--name", "mailclient", "--class", "mailclient", "-c", "200", "-r", "30", "-e", "neomutt", NULL};
+#define termcols "window.dimensions.columns=200"
+#define termrows "window.dimensions.lines=30"
+static const char *startfileman[] = {"alacritty", "--title", "fileman", "--class", "fileman", "-o", termcols, termrows, "-e", "lfrun", NULL};
+static const char *startmail[] = {"alacritty", "--title", "mailclient", "--class", "mailclient", "-o", termcols, termrows, "-e", "neomutt", NULL};
 
 static const char *startbrowser[] = {"firefox", "-p", NULL};
 static const char *startemacs[] = {"emacsclient", "-c", "-a", "",  NULL};
@@ -99,7 +101,7 @@ static const char *screenshotcmd[] = {"scrot-select", NULL};
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
-    	{ MODKEY, 			XK_e,	  				spawn,	   	{.v = startranger } },
+    	{ MODKEY, 			XK_e,	  				spawn,	   	{.v = startfileman } },
 	{ MODKEY|ShiftMask,		XK_e,	  				spawn,	   	{.v = startmail } },
 	{ MODKEY|ShiftMask,		XK_s,					spawn,		{.v = screenshotcmd } },
 	{ MODKEY,			XK_b,					spawn,		{.v = startbrowser } },
