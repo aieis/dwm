@@ -33,11 +33,12 @@ static const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
-	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-        { "fileman",  NULL,       NULL,       0,            1,           -1 },
+	 */    
+	/* class      instance    title       tags mask     isfloating   monitor    scratch key */
+	{ "Gimp",     NULL,       NULL,       0,            1,           -1,        0  },
+	{ "firefox",  NULL,       NULL,       1 << 8,       0,           -1,        0  },
+	{ NULL,       NULL,   "scratchpad",   0,            1,           -1,       's' },
+        { "fileman",  NULL,       NULL,       0,            1,           -1,        0 },        
 };
 
 /* layout(s) */
@@ -70,7 +71,10 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+
 static const char *termcmd[]  = { "alacritty", NULL };
+static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", NULL};
+
 /* Media Controls */
 static const char *raisevolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
 static const char *lowervolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
@@ -99,13 +103,15 @@ static const char *startemacs[] = {"emacsclient", "-c", "-a", "",  NULL};
 static const char *screenshotcmd[] = {"scrot-select", NULL};
 
 
+
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
     	{ MODKEY, 			XK_e,	  				spawn,	   	{.v = startfileman } },
 	{ MODKEY|ShiftMask,		XK_e,	  				spawn,	   	{.v = startmail } },
 	{ MODKEY|ShiftMask,		XK_s,					spawn,		{.v = screenshotcmd } },
 	{ MODKEY,			XK_b,					spawn,		{.v = startbrowser } },
-	{ MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
+        { MODKEY,                       XK_bracketleft,                         togglescratch,  {.v = scratchpadcmd } },
+        { MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
 	{ MODKEY,                       XK_n,                                   spawn,          {.v = startemacs } },
 	{ 0,				XF86XK_AudioRaiseVolume,		spawn,		{.v = raisevolcmd } },
 	{ 0,				XF86XK_AudioLowerVolume,		spawn,		{.v = lowervolcmd } },
@@ -131,7 +137,7 @@ static const Key keys[] = {
 
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+        { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
