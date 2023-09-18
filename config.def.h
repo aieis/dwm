@@ -72,8 +72,10 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 
-static const char *termcmd[]  = { "alacritty", NULL };
-static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", NULL};
+#define termcols "window.dimensions.columns=150"
+#define termrows "window.dimensions.lines=40"
+static const char *termcmd[]  = { "alacritty", "-o", termcols, termrows, NULL };
+static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", "-o", termcols, termrows, NULL};
 
 /* Media Controls */
 static const char *raisevolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
@@ -91,8 +93,6 @@ static const char *upbrightcmd[] = {"xbacklight", "-inc", "10", NULL};
 static const char *choosepower[] = {"poweroptsdmenu", NULL};
 
 /* Program Startup Shortcuts */
-#define termcols "window.dimensions.columns=200"
-#define termrows "window.dimensions.lines=30"
 static const char *startfileman[] = {"alacritty", "--title", "fileman", "--class", "fileman", "-o", termcols, termrows, "-e", "lfrun", NULL};
 static const char *startmail[] = {"alacritty", "--title", "mailclient", "--class", "mailclient", "-o", termcols, termrows, "-e", "neomutt", NULL};
 
