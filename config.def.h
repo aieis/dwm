@@ -70,6 +70,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *roficmd[] = {"rofi", "-show", "drun", NULL};
 
 #define termcols "window.dimensions.columns=150"
 #define termrows "window.dimensions.lines=40"
@@ -110,6 +111,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,		XK_s,					spawn,		{.v = screenshotcmd } },
 	{ MODKEY,			XK_b,					spawn,		{.v = startbrowser } },
         { MODKEY,                       XK_bracketleft,                         togglescratch,  {.v = scratchpadcmd } },
+        { MODKEY,                       XK_bracketright,                        spawn,          {.v = roficmd } },
         { MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
 	{ MODKEY,                       XK_n,                                   spawn,          {.v = startemacs } },
 	{ 0,				XF86XK_AudioRaiseVolume,		spawn,		{.v = raisevolcmd } },
