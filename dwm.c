@@ -876,7 +876,7 @@ drawbar(Monitor *m)
 		return;
 
 	if(showsystray && m == systraytomon(m) && !systrayonleft)
-		stw = getsystraywidth() + 5;
+		stw = getsystraywidth();
 
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
@@ -993,7 +993,7 @@ drawbar(Monitor *m)
                         
 		} else {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w, bh, 1, 1);
+			drw_rect(drw, x, 0, w - stw, bh, 1, 1);
 		}
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
