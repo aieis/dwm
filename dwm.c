@@ -876,7 +876,7 @@ drawbar(Monitor *m)
 		return;
 
 	if(showsystray && m == systraytomon(m) && !systrayonleft)
-		stw = getsystraywidth();
+		stw = getsystraywidth() + 5;
 
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
@@ -912,14 +912,15 @@ drawbar(Monitor *m)
 #define  DEL_R " ]"
         int wbl = TEXTW_NP(DEL_L);
         int wbr = TEXTW_NP(DEL_R);
-        
+        int tpads =  wbr + wbl;
+
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
 		if (c->isurgent)
 			urg |= c->tags;
                 if (ISVISIBLE(c)) {
                         n++;
-                        totalw += TEXTW_NP(c->name) + wbl + wbr;
+                        totalw += TEXTW_NP(c->name) + tpads;
                 }
 	}
 	x = 0;
@@ -946,7 +947,6 @@ drawbar(Monitor *m)
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
                         int remaining = m->ww - tw - stw - x;
-                        int tpads =  wbr + wbl;
                         int drawn = 0;
                         int skipped = 0;
                         if (totalw > remaining) {
