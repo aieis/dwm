@@ -74,8 +74,8 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *roficmd[] = {"rofi", "-show", "drun", NULL};
 
-#define termcols "window.dimensions.columns=150"
-#define termrows "window.dimensions.lines=40"
+#define termcols "window.dimensions.columns=80"
+#define termrows "window.dimensions.lines=30"
 static const char *termcmd[]  = { "alacritty", "-o", termcols, termrows, NULL };
 static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", "-o", termcols, termrows, NULL};
 
