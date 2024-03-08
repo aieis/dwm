@@ -35,11 +35,12 @@ static const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
-	 */    
+	 */
 	/* class      instance    title       tags mask     isfloating   monitor    scratch key */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1,        0  },
         { NULL,       NULL,   "scratchpad",   0,            1,           -1,       's' },
-        { "fileman",  NULL,       NULL,       0,            1,           -1,        0 },        
+        { "fileman",  NULL,       NULL,       0,            1,           -1,        0  },
+        { "Pavucontrol", NULL,    NULL  ,     0,            1,           -1,        0  },
 };
 
 /* layout(s) */
@@ -124,21 +125,20 @@ static const Key keys[] = {
 	{ 0,				XF86XK_AudioNext,			spawn,		{.v = nextmediacmd } },
 	{ 0, 				XF86XK_AudioPrev,			spawn,		{.v = prevmediacmd } },
 	{ 0,				XF86XK_AudioPlay,			spawn,		{.v = playmediacmd } },
-	{ 0,				XK_F12,					spawn, 		{.v = choosepower } },
+	{ MODKEY,			XK_F12,					spawn, 		{.v = choosepower } },
 	{ MODKEY,	                XK_F11,     				setlayout,      {.v = &layouts[2]} },
 	{ 0,                       	XK_F7,      				view,           {.ui = 1 << 7} },
-	{ 0,                       	XK_F1,      				view,           {.ui = 1 << 0} }, \
-	{ 0,                       	XK_F2,      				view,           {.ui = 1 << 1} }, \
-	{ 0,                       	XK_F3,      				view,           {.ui = 1 << 2} }, \
+	{ 0,                       	XK_F1,      				view,           {.ui = 1 << 0} },
+	{ 0,                       	XK_F2,      				view,           {.ui = 1 << 1} },
+	{ 0,                       	XK_F3,      				view,           {.ui = 1 << 2} },
 	{ 0,                            XK_F4,   				view,           {0} },
-        { MODKEY,                            XK_KP_Home,   spawn,          {.v = lowervolcmd}},
-        { MODKEY,                            XK_KP_Prior,   spawn,          {.v = raisevolcmd}},
-        { MODKEY,                            XK_KP_Up,   spawn,          {.v = mutecmd}},
-        { MODKEY,                            XK_KP_Left,   spawn,          {.v = prevmediacmd}},
-        { MODKEY,                            XK_KP_Right,   spawn,          {.v = nextmediacmd}},
-        { MODKEY,                            XK_KP_Begin,   spawn,          {.v = playmediacmd}},
-
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+        { MODKEY,                       XK_KP_Home,    spawn,          {.v  = lowervolcmd}},
+        { MODKEY,                       XK_KP_Prior,   spawn,          {.v = raisevolcmd}},
+        { MODKEY,                       XK_KP_Up,      spawn,          {.v    = mutecmd}},
+        { MODKEY,                       XK_KP_Left,    spawn,          {.v  = prevmediacmd}},
+        { MODKEY,                       XK_KP_Right,   spawn,          {.v = nextmediacmd}},
+        { MODKEY,                       XK_KP_Begin,   spawn,          {.v = playmediacmd}},
+        { MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
         { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -188,7 +188,7 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
-	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {1} }, 
+	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {1} },
 };
 
 /* button definitions */
@@ -211,4 +211,3 @@ static const Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
