@@ -43,7 +43,7 @@ static const Rule rules[] = {
         { "Gimp",        NULL,       NULL,       0,            1,           NULL,     -1,        0  },
         { NULL,          NULL,   "scratchpad",   0,            1,           NULL,     -1,       's' },
         { "fileman",     NULL,       NULL,       0,            1,           NULL,     -1,        0  },
-        { "Pavucontrol", NULL,       NULL  ,     0,            1,        "500W 600H", -1,        0  },
+        { "Pavucontrol", NULL,       NULL  ,     0,            1,        "500W 600H", -1,       'v' },
 
 };
 
@@ -83,12 +83,12 @@ static const char *roficmd[] = {"rofi", "-show", "drun", NULL};
 #define termrows "window.dimensions.lines=30"
 static const char *termcmd[]  = { "alacritty", "-o", termcols, termrows, NULL };
 static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", "-o", termcols, termrows, NULL};
+static const char *scratchvolcmd[] = {"v", "pavucontrol", NULL};
 
 /* Media Controls */
 static const char *raisevolcmd[]  = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
 static const char *lowervolcmd[]  = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
 static const char *mutecmd[]      = {"/bin/sh", "-c", "amixer sset Master toggle; kill -44 $(pidof dwmblocks)"};
-static const char *volctrlcmd[]   = {"/bin/sh", "-c", "(pidof pavucontrol && killall pavucontrol) || pavucontrol", NULL};
 static const char *nextmediacmd[] = {"playerctl", "--all-players", "next", NULL};
 static const char *prevmediacmd[] = {"playerctl", "--all-players", "prev", NULL};
 static const char *playmediacmd[] = {"playerctl", "--all-players", "play-pause", NULL};
@@ -122,7 +122,7 @@ static const Key keys[] = {
         { MODKEY,                       XK_bracketright,                        spawn,          {.v = roficmd } },
         { MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
 	{ MODKEY,                       XK_n,                                   spawn,          {.v = startemacs } },
-        { MODKEY,                       XK_g,                                   spawn,          {.v = volctrlcmd } },
+        { MODKEY,                       XK_g,                                   togglescratch,   {.v = scratchvolcmd } },
 	{ 0,				XF86XK_AudioRaiseVolume,		spawn,		{.v = raisevolcmd } },
 	{ 0,				XF86XK_AudioLowerVolume,		spawn,		{.v = lowervolcmd } },
 	{ 0,				XF86XK_AudioMute,			spawn,		{.v = mutecmd } },
