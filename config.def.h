@@ -43,7 +43,8 @@ static const Rule rules[] = {
         { "Gimp",        NULL,       NULL,       0,            1,           NULL,     -1,        0  },
         { NULL,          NULL,   "scratchpad",   0,            1,           NULL,     -1,       's' },
         { "fileman",     NULL,       NULL,       0,            1,           NULL,     -1,        0  },
-        { "Pavucontrol", NULL,       NULL  ,     0,            1,        "-100x", -1,        0  },
+        { "Pavucontrol", NULL,       NULL  ,     0,            1,        "500W 600H", -1,        0  },
+
 };
 
 /* layout(s) */
@@ -84,9 +85,10 @@ static const char *termcmd[]  = { "alacritty", "-o", termcols, termrows, NULL };
 static const char *scratchpadcmd[] = {"s", "alacritty", "--title", "scratchpad", "-o", termcols, termrows, NULL};
 
 /* Media Controls */
-static const char *raisevolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
-static const char *lowervolcmd[] = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
-static const char *mutecmd[]     = {"/bin/sh", "-c", "amixer sset Master toggle; kill -44 $(pidof dwmblocks)"};
+static const char *raisevolcmd[]  = {"/bin/sh", "-c", "amixer sset Master 5%+; kill -44 $(pidof dwmblocks)"};
+static const char *lowervolcmd[]  = {"/bin/sh", "-c", "amixer sset Master 5%-; kill -44 $(pidof dwmblocks)"};
+static const char *mutecmd[]      = {"/bin/sh", "-c", "amixer sset Master toggle; kill -44 $(pidof dwmblocks)"};
+static const char *volctrlcmd[]   = {"/bin/sh", "-c", "(pidof pavucontrol && killall pavucontrol) || pavucontrol", NULL};
 static const char *nextmediacmd[] = {"playerctl", "--all-players", "next", NULL};
 static const char *prevmediacmd[] = {"playerctl", "--all-players", "prev", NULL};
 static const char *playmediacmd[] = {"playerctl", "--all-players", "play-pause", NULL};
@@ -120,6 +122,7 @@ static const Key keys[] = {
         { MODKEY,                       XK_bracketright,                        spawn,          {.v = roficmd } },
         { MODKEY|ShiftMask,             XK_b,     				togglebar,      {0} },
 	{ MODKEY,                       XK_n,                                   spawn,          {.v = startemacs } },
+        { MODKEY,                       XK_g,                                   spawn,          {.v = volctrlcmd } },
 	{ 0,				XF86XK_AudioRaiseVolume,		spawn,		{.v = raisevolcmd } },
 	{ 0,				XF86XK_AudioLowerVolume,		spawn,		{.v = lowervolcmd } },
 	{ 0,				XF86XK_AudioMute,			spawn,		{.v = mutecmd } },
@@ -167,8 +170,8 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Up,     moveresize,     {.v = "0x 0y 0w -25h" } },
 	{ MODKEY|ShiftMask,             XK_Right,  moveresize,     {.v = "0x 0y 25w 0h" } },
 	{ MODKEY|ShiftMask,             XK_Left,   moveresize,     {.v = "0x 0y -25w 0h" } },
-        { MODKEY|ControlMask|ShiftMask, XK_period, moveresize,     {.v = "500x 500y 800W 450H" } }, // ↘
-        { MODKEY|ControlMask|ShiftMask, XK_comma,  moveresize,     {.v = "-500x -500y 800W 450H" } }, // ↘
+        { MODKEY|ControlMask|ShiftMask, XK_period, floatpos,       {.v = "99999x 99999y 800W 450H" } }, // ↘
+        { MODKEY|ControlMask|ShiftMask, XK_comma,  floatpos,       {.v = "-99999x -99999y 800W 450H" } }, // ↖
 	{ MODKEY|ControlMask,           XK_Up,     moveresizeedge, {.v = "t"} },
 	{ MODKEY|ControlMask,           XK_Down,   moveresizeedge, {.v = "b"} },
 	{ MODKEY|ControlMask,           XK_Left,   moveresizeedge, {.v = "l"} },
